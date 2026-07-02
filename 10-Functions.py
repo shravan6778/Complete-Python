@@ -121,14 +121,353 @@ print(f"Squared: {squared_nums}")  # [1, 4, 9, 16, 25, 36]
 even_nums = list(filter(lambda x: x % 2 == 0, numbers))
 print(f"Evens:   {even_nums}")  # [2, 4, 6]
 
+#3. reduce : Reduce Function
 
+#reduce() repeatedly applies a function to elements of an iterable and reduces them to a single value.
+
+numbers = [1, 2, 3, 4]
+from functools import reduce
+
+result = reduce(lambda a, b: a + b, numbers)
+
+print(result)
 ##Generators (Clear Breakdown)
 
 ### The Concept
 
 '''Imagine you want a million numbers. If you use a normal function with `return`, Python has to calculate all one million numbers, build a massive list in your computer's RAM, and give it to you all at once. If your memory fills up, your program crashes.
 
-A **Generator** is like a chef who hands you one fresh donut at a time only when you say "Next!". It doesn't store a million numbers; it just remembers *where it left off* and calculates the next number on demand. This is incredibly memory-efficient.'''
+A **Generator** is like a chef who hands you one fresh donut at a time only when you say "Next!". It doesn't store a million numbers; it just remembers *where it left off* and calculates the next number on demand. This is incredibly memory-efficient.
+
+## What is a Generator?
+
+A **generator** is a special type of function that produces values **one at a time** using the `yield` keyword, instead of creating and returning all values at once.
+
+Normal function:
+
+```python
+def numbers():
+    return [1, 2, 3]
+```
+
+Generator:
+
+```python
+def numbers():
+    yield 1
+    yield 2
+    yield 3
+```
+
+---
+
+## Why Do We Use Generators?
+
+### 1. Save Memory
+
+Suppose you need numbers from 1 to 1 crore.
+
+Without a generator:
+
+```python
+nums = list(range(1, 10000001))
+```
+
+Python creates all 1 crore numbers in memory at once.
+
+With a generator:
+
+```python
+def generate_numbers():
+    for i in range(1, 10000001):
+        yield i
+```
+
+Only one number is generated when needed.
+
+```python
+g = generate_numbers()
+
+print(next(g))  # 1
+print(next(g))  # 2
+print(next(g))  # 3
+```
+
+Memory usage is very small.
+
+---
+
+### 2. Handle Large Files or Data Streams
+
+Imagine a file with 10 million lines.
+
+Bad approach:
+
+```python
+with open("bigfile.txt") as f:
+    lines = f.readlines()
+```
+
+All lines are loaded into memory.
+
+Better approach:
+
+```python
+def read_file():
+    with open("bigfile.txt") as f:
+        for line in f:
+            yield line
+```
+
+Now one line is processed at a time.
+
+---
+
+### 3. Generate Infinite Sequences
+
+Generators can create values forever.
+
+```python
+def infinite_numbers():
+    n = 1
+    while True:
+        yield n
+        n += 1
+```
+
+Usage:
+
+```python
+g = infinite_numbers()
+
+print(next(g))  # 1
+print(next(g))  # 2
+print(next(g))  # 3
+```
+
+You don't need to store infinite values in memory.
+
+---
+
+## How Does `yield` Work?
+
+Consider:
+
+```python
+def demo():
+    print("Start")
+    yield 1
+
+    print("Middle")
+    yield 2
+
+    print("End")
+    yield 3
+```
+
+Create generator:
+
+```python
+g = demo()
+```
+
+Nothing executes yet.
+
+### First next()
+
+```python
+print(next(g))
+```
+
+Output:
+
+```python
+Start
+1
+```
+
+Execution pauses at the first `yield`.
+
+---
+
+### Second next()
+
+```python
+print(next(g))
+```
+
+Output:
+
+```python
+Middle
+2
+```
+
+Execution resumes where it stopped.
+
+---
+
+### Third next()
+
+```python
+print(next(g))
+```
+
+Output:
+
+```python
+End
+3
+```
+
+---
+
+### Fourth next()
+
+```python
+print(next(g))
+```
+
+Output:
+
+```python
+StopIteration
+```
+
+The generator has finished.
+
+---
+
+## Generator vs Normal Function
+
+### Normal Function
+
+```python
+def square_numbers(n):
+    result = []
+    for i in range(n):
+        result.append(i*i)
+    return result
+```
+
+Returns all values at once.
+
+---
+
+### Generator
+
+```python
+def square_numbers(n):
+    for i in range(n):
+        yield i*i
+```
+
+Returns values one by one.
+
+Usage:
+
+```python
+for num in square_numbers(5):
+    print(num)
+```
+
+Output:
+
+```python
+0
+1
+4
+9
+16
+```
+
+---
+
+## Generator Expression
+
+Just like list comprehensions:
+
+List comprehension:
+
+```python
+squares = [x*x for x in range(5)]
+```
+
+Generator expression:
+
+```python
+squares = (x*x for x in range(5))
+```
+
+Usage:
+
+```python
+print(next(squares))
+print(next(squares))
+```
+
+Output:
+
+```python
+0
+1
+```
+
+---
+
+## When Should You Use Generators?
+
+Use generators when:
+
+✅ Working with large datasets
+
+✅ Reading large files
+
+✅ Streaming data
+
+✅ Processing data one item at a time
+
+✅ Creating infinite sequences
+
+✅ You want better memory efficiency
+
+---
+
+## Interview Answer
+
+**A generator is a special function that uses `yield` to produce values one at a time instead of returning all values at once. It saves memory because values are generated only when needed. Generators are commonly used for large datasets, file processing, and infinite sequences.**
+
+Example:
+
+```python
+def count():
+    for i in range(1, 6):
+        yield i
+
+g = count()
+
+for num in g:
+    print(num)
+```
+
+Output:
+
+```python
+1
+2
+3
+4
+5
+```
+
+A good way to think about it:
+
+* `return` → gives all results and ends the function.
+* `yield` → gives one result, pauses the function, and continues later from the same place.
+
+
+
+'''
 
 # Instead of `return`, a generator uses the **`yield`** keyword.
 
@@ -216,3 +555,37 @@ def greet_with_name(name, age):
 
 
 greet_with_name("Rahul", 24)
+
+
+
+'''An iterator is an object representing a stream of data (iter() gets the iterator, next() gets the next value). A generator is a function that acts like an iterator, using the yield keyword. Generators save memory because they generate values on the fly (lazily) rather than storing the entire sequence in memory at once.'''
+
+def fibonacci_gen(limit):
+    a, b = 0, 1
+    while a < limit:
+        yield a  # Pauses execution and returns 'a'
+        a, b = b, a + b
+
+# Using the generator (memory efficient)
+for num in fibonacci_gen(10):
+    print(num, end=" ")
+
+# Generator expression (like a comprehension, but with parentheses)
+gen_expr = (x**2 for x in range(1000000)) # Barely uses any memory
+print(next(gen_expr))
+
+
+'''Python treats functions as first-class objects, meaning you can pass them as arguments, return them, and assign them to variables. A closure occurs when an inner function remembers the state of its enclosing environment even after the outer function has finished executing.'''
+
+def multiplier(factor):
+    # This inner function remembers 'factor'
+    def multiply(number):
+        return number * factor
+    return multiply
+
+# Passing functions around
+double = multiplier(2)
+triple = multiplier(3)
+
+print(double(5)) # Outputs 10
+print(triple(5)) # Outputs 15
