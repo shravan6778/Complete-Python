@@ -9,6 +9,15 @@ print(l2)
 squares = [i**2 for i in range(1,100) if i%2==0]
 print(squares)
 
+#Nested comprehension
+num=[[1,2],[3,4]]
+l=[[x**2 for x in row] for row in num]
+print(l)
+
+matrix=[[1,2],[3,4]]
+flat=[num for row in matrix for num in row]
+print(flat)
+
 #List using range function
 num=range(1,20,2)
 print(list(num))
